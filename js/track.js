@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import { asphaltMap, sandMap, grassMap, rockMap } from "./gfx.js";
+import { asphaltMap, sandMap, grassMap } from "./gfx.js";
+import { makeBillboard } from "./art.js";
 
 export const TRACK_WIDTH = 15.4;
 export const HALF_WIDTH = TRACK_WIDTH * 0.5;
@@ -50,6 +51,7 @@ export class Track {
     this.itemSpawns = [];
     this.center = new THREE.Vector3();
     this.clouds = [];
+    this.billboards = [];
     this.water = null;
     this.banner = null;
     this.lights = [];
@@ -589,32 +591,7 @@ export class Track {
   }
 
   #makePalm() {
-    if (!this._palmGeo) {
-      this._palmGeo = {
-        trunk: new THREE.CylinderGeometry(0.16, 0.28, 5.2, 6),
-        leaf: new THREE.ConeGeometry(0.55, 2.4, 5),
-        cap: new THREE.SphereGeometry(0.42, 8, 6),
-        trunkMat: new THREE.MeshStandardMaterial({ color: 0x8a5a32, roughness: 0.85 }),
-        leafMat: new THREE.MeshStandardMaterial({ color: 0x2f9a4a, roughness: 0.7 }),
-      };
-    }
-    const g = new THREE.Group();
-    const trunk = new THREE.Mesh(this._palmGeo.trunk, this._palmGeo.trunkMat);
-    trunk.position.y = 2.6;
-    trunk.castShadow = true;
-    g.add(trunk);
-    for (let i = 0; i < 6; i++) {
-      const leaf = new THREE.Mesh(this._palmGeo.leaf, this._palmGeo.leafMat);
-      leaf.position.y = 5.1;
-      leaf.rotation.z = 0.95;
-      leaf.rotation.y = (i / 6) * Math.PI * 2;
-      leaf.castShadow = true;
-      g.add(leaf);
-    }
-    const cap = new THREE.Mesh(this._palmGeo.cap, this._palmGeo.leafMat);
-    cap.position.y = 5.15;
-    g.add(cap);
-    return g;
+    return makeBillboard("assets/prop-palm.png", 4.2, 5.8);
   }
 
   #palms(scene) {
@@ -625,38 +602,37 @@ export class Track {
       const side = rng() > 0.5 ? 1 : -1;
       const palm = this.#makePalm();
       const dist = HALF_WIDTH + 6 + rng() * 10;
+      const sc = 0.85 + rng() * 0.45;
       palm.position.copy(s.position).addScaledVector(s.right, side * dist);
-      palm.position.y = Math.max(0, s.position.y - 0.2);
-      palm.rotation.y = rng() * Math.PI * 2;
-      palm.scale.setScalar(0.85 + rng() * 0.45);
+      palm.position.y = Math.max(0, s.position.y - 0.2) + 2.9 * sc;
+      palm.scale.setScalar(sc);
+      this.billboards.push(palm);
       scene.add(palm);
     }
     for (let k = 0; k < 10; k++) {
       const palm = this.#makePalm();
       const a = rng() * Math.PI * 2;
       const r = 70 + rng() * 70;
-      palm.position.set(this.center.x + Math.cos(a) * r, 0, this.center.z + Math.sin(a) * r);
-      palm.scale.setScalar(0.7 + rng() * 0.6);
+      const sc = 0.7 + rng() * 0.6;
+      palm.position.set(this.center.x + Math.cos(a) * r, 2.9 * sc, this.center.z + Math.sin(a) * r);
+      palm.scale.setScalar(sc);
+      this.billboards.push(palm);
       scene.add(palm);
     }
   }
 
   #rocks(scene) {
-    const rockTex = rockMap();
-    const mat = new THREE.MeshStandardMaterial({ map: rockTex, roughness: 0.95 });
-    const rockGeo = new THREE.DodecahedronGeometry(1.2, 0);
     const rng = mulberry(99);
     for (let i = 0; i < 22; i++) {
       const s = this.samples[Math.floor(rng() * this.samples.length)];
       if (this.#onBridge(s.t)) continue;
-      const rock = new THREE.Mesh(rockGeo, mat);
-      rock.scale.setScalar(0.7 + rng() * 1.4);
+      const rock = makeBillboard("assets/prop-rock.png", 3.4, 2.5);
+      const sc = 0.7 + rng() * 1.4;
+      rock.scale.setScalar(sc);
       const side = rng() > 0.5 ? 1 : -1;
       rock.position.copy(s.position).addScaledVector(s.right, side * (HALF_WIDTH + 4 + rng() * 8));
-      rock.position.y += 0.4;
-      rock.rotation.set(rng(), rng(), rng());
-      rock.castShadow = true;
-      rock.receiveShadow = true;
+      rock.position.y += 0.4 + 1.25 * sc;
+      this.billboards.push(rock);
       scene.add(rock);
     }
   }
@@ -688,18 +664,18 @@ export class Track {
   }
 
   #clouds(scene) {
-    const mat = new THREE.MeshBasicMaterial({ color: 0xffe6c8, transparent: true, opacity: 0.55 });
     for (let i = 0; i < 10; i++) {
-      const g = new THREE.Group();
-      for (let k = 0; k < 3; k++) {
-        const puff = new THREE.Mesh(new THREE.SphereGeometry(4 + Math.random() * 3, 8, 6), mat);
-        puff.position.set((k - 1) * 5, Math.random() * 1.5, (Math.random() - 0.5) * 4);
-        puff.scale.x = 1.6;
-        g.add(puff);
-      }
-      g.position.set(this.center.x + (Math.random() - 0.5) * 260, 38 + Math.random() * 18, this.center.z + (Math.random() - 0.5) * 260);
-      scene.add(g);
-      this.clouds.push(g);
+      const cloud = makeBillboard("assets/prop-cloud.png", 22, 12);
+      cloud.position.set(this.center.x + (Math.random() - 0.5) * 260, 38 + Math.random() * 18, this.center.z + (Math.random() - 0.5) * 260);
+      scene.add(cloud);
+      this.clouds.push(cloud);
+      this.billboards.push(cloud);
+    }
+  }
+
+  faceCamera(camPos) {
+    for (const b of this.billboards) {
+      b.lookAt(camPos.x, b.position.y, camPos.z);
     }
   }
 
