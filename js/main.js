@@ -202,6 +202,15 @@ function showFinish() {
   audio.fanfare();
 }
 
+
+function faceArt() {
+  track.faceCamera(camera.position);
+  for (const k of karts) {
+    const s = k.mesh.userData.sprite;
+    if (s) s.lookAt(camera.position.x, k.mesh.position.y + 1.05, camera.position.z);
+  }
+}
+
 function renderFrame() {
   fx.cine.uniforms.uTime.value = clock;
   fx.composer.render();
@@ -224,6 +233,7 @@ function tick(now) {
 
   if (mode === "title") {
     chase.updateCinematic(dt, clock, track.center);
+    faceArt();
     renderFrame();
     hud.draw({ mode, player, karts, raceTime: 0, wrongWay: false });
     audio.updateEngine(0, 0, false, false);
@@ -248,6 +258,7 @@ function tick(now) {
       simulateKart(ai.kart, idle, track, dt, false);
     }
     chase.update(dt, player);
+    faceArt();
     renderFrame();
     hud.draw({ mode, player, karts, raceTime: 0, wrongWay: false });
     if (countT >= 3.35) {
@@ -310,6 +321,7 @@ function tick(now) {
     updatePlaces();
     updateSparks(sparks, player, dt);
     chase.update(dt, player);
+    faceArt();
     renderFrame();
 
     const deltaP = player.progress - lastProgress;
@@ -334,6 +346,7 @@ function tick(now) {
 
   if (mode === "finish") {
     chase.update(dt, player);
+    faceArt();
     renderFrame();
     hud.draw({ mode: "race", player, karts, raceTime, wrongWay: false });
     audio.updateEngine(player.speed, 0, false, true);
