@@ -1,14 +1,29 @@
 import * as THREE from "three";
+import volt from "./art-volt.js";
+import ember from "./art-ember.js";
+import reef from "./art-reef.js";
+import sunny from "./art-sunny.js";
+import orchid from "./art-orchid.js";
+import bolt from "./art-bolt.js";
+import palm from "./art-palm.js";
+import rock from "./art-rock.js";
+import cloud from "./art-cloud.js";
 
 const loader = new THREE.TextureLoader();
 
 export const KART_ART = {
-  Volt: "assets/kart-volt.png",
-  Ember: "assets/kart-ember.png",
-  Reef: "assets/kart-reef.png",
-  Sunny: "assets/kart-sunny.png",
-  Orchid: "assets/kart-orchid.png",
-  Bolt: "assets/kart-bolt.png",
+  Volt: volt,
+  Ember: ember,
+  Reef: reef,
+  Sunny: sunny,
+  Orchid: orchid,
+  Bolt: bolt,
+};
+
+export const PROP_ART = {
+  palm,
+  rock,
+  cloud,
 };
 
 const cache = new Map();
