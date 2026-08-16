@@ -1,4 +1,12 @@
 import p0 from "./art-palm-0.js";
 import p1 from "./art-palm-1.js";
 import p2 from "./art-palm-2.js";
-export default p0 + p1 + p2;
+import p3 from "./art-palm-3.js";
+import p4 from "./art-palm-4.js";
+import p5 from "./art-palm-5.js";
+import p6 from "./art-palm-6.js";
+import p7 from "./art-palm-7.js";
+import p8 from "./art-palm-8.js";
+import p9 from "./art-palm-9.js";
+import p10 from "./art-palm-10.js";
+export default p0 + p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10;
