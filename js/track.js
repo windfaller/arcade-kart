@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { asphaltMap, sandMap, grassMap } from "./gfx.js";
-import { makeBillboard } from "./art.js";
+import { makeBillboard, PROP_ART } from "./art.js";
 
 export const TRACK_WIDTH = 15.4;
 export const HALF_WIDTH = TRACK_WIDTH * 0.5;
@@ -591,7 +591,7 @@ export class Track {
   }
 
   #makePalm() {
-    return makeBillboard("assets/prop-palm.png", 4.2, 5.8);
+    return makeBillboard(PROP_ART.palm, 4.2, 5.8);
   }
 
   #palms(scene) {
@@ -626,7 +626,7 @@ export class Track {
     for (let i = 0; i < 22; i++) {
       const s = this.samples[Math.floor(rng() * this.samples.length)];
       if (this.#onBridge(s.t)) continue;
-      const rock = makeBillboard("assets/prop-rock.png", 3.4, 2.5);
+      const rock = makeBillboard(PROP_ART.rock, 3.4, 2.5);
       const sc = 0.7 + rng() * 1.4;
       rock.scale.setScalar(sc);
       const side = rng() > 0.5 ? 1 : -1;
@@ -665,7 +665,7 @@ export class Track {
 
   #clouds(scene) {
     for (let i = 0; i < 10; i++) {
-      const cloud = makeBillboard("assets/prop-cloud.png", 22, 12);
+      const cloud = makeBillboard(PROP_ART.cloud, 22, 12);
       cloud.position.set(this.center.x + (Math.random() - 0.5) * 260, 38 + Math.random() * 18, this.center.z + (Math.random() - 0.5) * 260);
       scene.add(cloud);
       this.clouds.push(cloud);
